@@ -23,10 +23,10 @@ async function getProduct(slug) {
 export async function generateMetadata({ params }) {
   const { slug } = await params
   const product = await getProduct(slug)
-  if (!product) return { title: 'Product Not Found — Radha Rani Paridhan' }
+  if (!product) return { title: 'Product Not Found — Radha Rani Paridhan Ajmer' }
   return {
-    title: `${product.name} — Radha Rani Paridhan`,
-    description: product.description || `Shop ${product.name} at Radha Rani Paridhan.`,
+    title: `${product.name} — Radha Rani Paridhan Ajmer`,
+    description: product.description || `Shop ${product.name} at Radha Rani Paridhan Ajmer.`,
     openGraph: {
       images: [product.image],
     },

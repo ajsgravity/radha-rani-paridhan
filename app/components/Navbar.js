@@ -5,7 +5,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <Link href="/" className="nav-logo" style={{ fontFamily: 'var(--font-serif)' }}>
-        RADHA RANI
+        RADHA RANI PARIDHAN AJMER
       </Link>
       <ul className="nav-links">
         <li><Link href="/">Home</Link></li>

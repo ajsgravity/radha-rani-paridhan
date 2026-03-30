@@ -43,3 +43,8 @@ next-env.d.ts
 # backend
 backend/node_modules/
 .aider*
+
+# Temporary test scripts
+test.js
+test-upload.js
+dummy.jpg

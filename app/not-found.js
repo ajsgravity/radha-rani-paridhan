@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: '404 — Page Not Found | Radha Rani Paridhan',
+  title: '404 — Page Not Found | Radha Rani Paridhan Ajmer',
 }
 
 export default function NotFound() {

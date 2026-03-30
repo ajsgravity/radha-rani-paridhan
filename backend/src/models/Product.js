@@ -34,8 +34,8 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Auto-generate slug from name
-productSchema.pre('save', function (next) {
+// Auto-generate slug from name (Mongoose 7+ async hook style)
+productSchema.pre('save', async function () {
   if (!this.slug && this.name) {
     this.slug = this.name
       .toLowerCase()
@@ -43,7 +43,6 @@ productSchema.pre('save', function (next) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
   }
-  next();
 });
 
 module.exports = mongoose.model('Product', productSchema);

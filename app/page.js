@@ -7,8 +7,8 @@ import AddToCartButton from './components/AddToCartButton'
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
 export const metadata = {
-  title: 'Radha Rani Paridhan — Premium Indian Ethnic Wear',
-  description: 'Discover timeless elegance with handcrafted sarees, lehengas, anarkali suits and ethnic wear from Radha Rani Paridhan. Premium quality, authentic craftsmanship.',
+  title: 'Radha Rani Paridhan Ajmer — Premium Indian Ethnic Wear',
+  description: 'Discover timeless elegance with handcrafted sarees, lehengas, anarkali suits and ethnic wear from Radha Rani Paridhan Ajmer. Premium quality, authentic craftsmanship.',
 }
 
 async function getProducts() {
@@ -113,7 +113,7 @@ export default async function Home() {
         fontSize: '.8rem',
       }}>
         <span style={{ color: 'var(--accent)', fontWeight: 700, letterSpacing: '.1em' }}>
-          RADHA RANI PARIDHAN
+          RADHA RANI PARIDHAN AJMER
         </span>
         <span>© {new Date().getFullYear()} · Handcrafted with love in Varanasi</span>
         <div style={{ display: 'flex', gap: 24 }}>

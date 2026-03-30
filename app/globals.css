@@ -2,15 +2,15 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:      #0d0d0d;
-  --surface: #161616;
-  --surface2: #1c1c1c;
-  --border:  #2a2a2a;
-  --text:    #f0ede8;
-  --muted:   #888;
-  --accent:  #d4a853;
-  --accent-light: rgba(212, 168, 83, 0.12);
-  --danger:  #ff4d4d;
+  --bg:      #f7f4ef;
+  --surface: #ffffff;
+  --surface2: #f0ece4;
+  --border:  #e0d9ce;
+  --text:    #1a1208;
+  --muted:   #7a6f60;
+  --accent:  #b8882a;
+  --accent-light: rgba(184, 136, 42, 0.12);
+  --danger:  #cc3333;
   --radius:  14px;
   --radius-sm: 8px;
   --radius-pill: 100px;
@@ -25,7 +25,7 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
+  background-image: radial-gradient(circle, #d8ccb8 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
@@ -71,7 +71,7 @@ button {
   justify-content: space-between;
   padding: 20px 48px;
   border-bottom: 1px solid var(--border);
-  background: rgba(13, 13, 13, 0.85);
+  background: rgba(247, 244, 239, 0.88);
   backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
@@ -198,7 +198,7 @@ button {
   border-bottom: 1px solid var(--border);
   position: relative;
   overflow: hidden;
-  background: #111;
+  background: var(--surface2);
 }
 
 .card-preview img {
@@ -645,7 +645,7 @@ button {
 }
 
 .field input::placeholder,
-.field textarea::placeholder { color: #3a3a3a; }
+.field textarea::placeholder { color: #b0a898; }
 
 .field input:focus,
 .field textarea:focus { border-color: var(--accent); }

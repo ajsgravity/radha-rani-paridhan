@@ -13,8 +13,8 @@ const showcaseItems = [
 ]
 
 export const metadata = {
-  title: 'Community — Radha Rani Paridhan',
-  description: 'See how our customers style their Radha Rani Paridhan outfits. Get inspired!',
+  title: 'Community — Radha Rani Paridhan Ajmer',
+  description: 'See how our customers style their Radha Rani Paridhan Ajmer outfits. Get inspired!',
 }
 
 export default function CommunityPage() {
@@ -30,7 +30,7 @@ export default function CommunityPage() {
           </h2>
           <p>
             Share your look, tag us on Instagram, and get featured
-            in the Radha Rani showcase.
+            in the Radha Rani Paridhan Ajmer showcase.
           </p>
           <div className="comm-ctas">
             <Link href="/collections">

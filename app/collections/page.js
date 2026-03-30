@@ -7,7 +7,7 @@ import AddToCartButton from '../components/AddToCartButton'
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
 export const metadata = {
-  title: 'Collections — Radha Rani Paridhan',
+  title: 'Collections — Radha Rani Paridhan Ajmer',
   description: 'Explore our complete collection of sarees, lehengas, anarkali suits and ethnic wear.',
 }
 

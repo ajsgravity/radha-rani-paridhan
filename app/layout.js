@@ -14,8 +14,8 @@ const playfair = Playfair_Display({
 })
 
 export const metadata = {
-  title: 'Radha Rani Paridhan — Premium Indian Ethnic Wear',
-  description: 'Discover timeless elegance with handcrafted sarees, lehengas, anarkali suits and ethnic wear from Radha Rani Paridhan. Premium quality, authentic craftsmanship.',
+  title: 'Radha Rani Paridhan Ajmer — Premium Indian Ethnic Wear',
+  description: 'Discover timeless elegance with handcrafted sarees, lehengas, anarkali suits and ethnic wear from Radha Rani Paridhan Ajmer. Premium quality, authentic craftsmanship.',
 }
 
 export default function RootLayout({ children }) {

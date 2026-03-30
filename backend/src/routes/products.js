@@ -40,72 +40,62 @@ router.post('/upload', upload.single('image'), (req, res) => {
 });
 
 // ── GET /api/products ───────────────────────────
-router.get('/', async (req, res, next) => {
-  try {
-    const { category, status } = req.query;
-    const filter = {};
-    if (category) filter.category = category;
-    if (status !== undefined) filter.status = status === 'true';
-    else filter.status = true; // public: only active by default
+router.get('/', async (req, res) => {
+  const { category, status } = req.query;
+  const filter = {};
+  if (category) filter.category = category;
+  if (status !== undefined) filter.status = status === 'true';
+  else filter.status = true; // public: only active by default
 
-    const products = await Product.find(filter).sort({ createdAt: -1 });
-    res.json({ data: products });
-  } catch (err) { next(err); }
+  const products = await Product.find(filter).sort({ createdAt: -1 });
+  res.json({ data: products });
 });
 
 // ── GET /api/products/all  (admin — all including drafts) ──
-router.get('/all', requireAuth, async (_req, res, next) => {
-  try {
-    const products = await Product.find().sort({ createdAt: -1 });
-    res.json({ data: products });
-  } catch (err) { next(err); }
+router.get('/all', requireAuth, async (_req, res) => {
+  const products = await Product.find().sort({ createdAt: -1 });
+  res.json({ data: products });
 });
 
 // ── GET /api/products/:idOrSlug ─────────────────
-router.get('/:idOrSlug', async (req, res, next) => {
-  try {
-    const { idOrSlug } = req.params;
-    const product = idOrSlug.match(/^[0-9a-fA-F]{24}$/)
-      ? await Product.findById(idOrSlug)
-      : await Product.findOne({ slug: idOrSlug, status: true });
-    if (!product) return res.status(404).json({ error: 'Product not found' });
-    res.json({ data: product });
-  } catch (err) { next(err); }
+router.get('/:idOrSlug', async (req, res) => {
+  const { idOrSlug } = req.params;
+  const product = idOrSlug.match(/^[0-9a-fA-F]{24}$/)
+    ? await Product.findById(idOrSlug)
+    : await Product.findOne({ slug: idOrSlug, status: true });
+  if (!product) return res.status(404).json({ error: 'Product not found' });
+  res.json({ data: product });
 });
 
 // ── POST /api/products  (admin only) ───────────
-router.post('/', requireAuth, validate(productSchema), async (req, res, next) => {
+router.post('/', requireAuth, validate(productSchema), async (req, res) => {
   try {
     const product = await Product.create(req.body);
     res.status(201).json({ data: product });
   } catch (err) {
     if (err.code === 11000) return res.status(409).json({ error: 'Product slug already exists' });
-    next(err);
+    throw err;
   }
 });
 
 // ── PUT /api/products/:id  (admin only) ────────
-router.put('/:id', requireAuth, validate(productSchema.partial()), async (req, res, next) => {
-  try {
-    const product = await Product.findByIdAndUpdate(
-      req.params.id, req.body, { new: true, runValidators: true }
-    );
-    if (!product) return res.status(404).json({ error: 'Product not found' });
-    res.json({ data: product });
-  } catch (err) { next(err); }
+router.put('/:id', requireAuth, validate(productSchema.partial()), async (req, res) => {
+  const product = await Product.findByIdAndUpdate(
+    req.params.id, req.body, { new: true, runValidators: true }
+  );
+  if (!product) return res.status(404).json({ error: 'Product not found' });
+  res.json({ data: product });
 });
 
 // ── DELETE /api/products/:id  (admin only) ─────
-router.delete('/:id', requireAuth, async (req, res, next) => {
-  try {
-    const product = await Product.findByIdAndDelete(req.params.id);
-    if (!product) return res.status(404).json({ error: 'Product not found' });
-    // Delete image from Cloudinary if present
-    if (product.cloudinaryPublicId) {
-      await cloudinary.uploader.destroy(product.cloudinaryPublicId).catch(console.error);
-    }
-    res.json({ success: true });
-  } catch (err) { next(err); }
+router.delete('/:id', requireAuth, async (req, res) => {
+  const product = await Product.findByIdAndDelete(req.params.id);
+  if (!product) return res.status(404).json({ error: 'Product not found' });
+  // Delete image from Cloudinary if present
+  if (product.cloudinaryPublicId) {
+    await cloudinary.uploader.destroy(product.cloudinaryPublicId).catch(console.error);
+  }
+  res.json({ success: true });
 });
 
 module.exports = router;

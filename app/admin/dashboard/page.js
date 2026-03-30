@@ -164,13 +164,26 @@ function ProductModal({ editProduct, onClose, onSaved }) {
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.75)', backdropFilter: 'blur(4px)', zIndex: 200 }} />
-      <div style={{
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.75)', backdropFilter: 'blur(4px)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
+      {/* <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
         background: '#111', border: '1px solid #2a2a2a', borderRadius: 18,
         width: '100%', maxWidth: 560, zIndex: 201, maxHeight: '90vh', overflowY: 'auto',
         animation: 'fade-up .25s ease both',
-      }}>
+      }}> */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: '#111',
+          border: '1px solid #2a2a2a',
+          borderRadius: 18,
+          width: '100%',
+          maxWidth: 560,
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          animation: 'fade-up .25s ease both',
+        }}
+      >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px', borderBottom: '1px solid #1e1e1e', position: 'sticky', top: 0, background: '#111', zIndex: 1 }}>
           <h3 style={{ fontSize: '.95rem', fontWeight: 700 }}>{editProduct ? 'Edit Product' : 'Add New Product'}</h3>
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#666', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
@@ -373,8 +386,8 @@ export default function AdminDashboard() {
 
   const navItems = [
     { key: 'analytics', icon: '📊', label: 'Analytics' },
-    { key: 'products',  icon: '👗', label: 'Products' },
-    { key: 'orders',    icon: '📦', label: 'Orders' },
+    { key: 'products', icon: '👗', label: 'Products' },
+    { key: 'orders', icon: '📦', label: 'Orders' },
   ]
 
   if (!isClient) {

@@ -8,6 +8,10 @@ const { env } = require('../config/env');
 
 const router = Router();
 
+function isBcryptHash(value) {
+  return /^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/.test(value);
+}
+
 const loginSchema = z.object({
   secretKey: z.string().min(1, 'Secret key is required'),
 });
@@ -15,10 +19,10 @@ const loginSchema = z.object({
 // POST /api/auth/login
 router.post('/login', loginLimiter, validate(loginSchema), async (req, res) => {
   try {
-    const { secretKey } = req.body;
+    const secretKey = req.body.secretKey.trim();
 
-    // If no hash set yet, use a demo mode
-    if (!env.ADMIN_SECRET_KEY_HASH) {
+    // If no hash nor plain text key is set yet, use a demo mode
+    if (!env.ADMIN_SECRET_KEY_HASH && !env.ADMIN_SECRET_KEY) {
       // Demo mode: any key works
       const accessToken = signAccessToken({ role: 'admin', email: env.ADMIN_EMAIL });
       const refreshToken = signRefreshToken({ role: 'admin', email: env.ADMIN_EMAIL });
@@ -34,7 +38,23 @@ router.post('/login', loginLimiter, validate(loginSchema), async (req, res) => {
       return res.json({ accessToken, expiresIn: env.JWT_EXPIRES_IN });
     }
 
-    const isValid = await verifyPassword(secretKey, env.ADMIN_SECRET_KEY_HASH);
+    let isValid = false;
+    
+    // Check plaintext key if defined, else compare against bcrypt hash
+    if (env.ADMIN_SECRET_KEY) {
+      isValid = (secretKey === env.ADMIN_SECRET_KEY);
+    } else if (env.ADMIN_SECRET_KEY_HASH) {
+      // Accept both bcrypt hash and plain text for safer deployment recovery.
+      // If hash is not a bcrypt hash format, fallback to plain comparison.
+      if (isBcryptHash(env.ADMIN_SECRET_KEY_HASH)) {
+        isValid = await verifyPassword(secretKey, env.ADMIN_SECRET_KEY_HASH);
+      } else {
+        isValid = (secretKey === env.ADMIN_SECRET_KEY_HASH);
+      }
+    } else {
+      isValid = false;
+    }
+    
     if (!isValid) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }

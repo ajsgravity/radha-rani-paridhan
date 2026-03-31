@@ -21,7 +21,7 @@ export default function AdminLoginPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ secretKey: key }),
+        body: JSON.stringify({ secretKey: key.trim() }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Login failed')

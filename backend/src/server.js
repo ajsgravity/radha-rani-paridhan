@@ -18,8 +18,28 @@ const orderRoutes = require('./routes/orders');
 
 const app = express();
 
-// Extract individual urls if FRONTEND_URL contains commas
-const frontendUrls = env.FRONTEND_URL.split(',').map(u => u.trim()).filter(Boolean);
+function parseOrigin(input) {
+  try {
+    return new URL(input).origin;
+  } catch {
+    return null;
+  }
+}
+
+function parseAllowedFrontendOrigins(raw) {
+  return [
+    ...new Set(
+      raw
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean)
+        .map(parseOrigin)
+        .filter(Boolean)
+    ),
+  ];
+}
+
+const frontendOrigins = parseAllowedFrontendOrigins(env.FRONTEND_URL);
 
 // ── Security Headers ────────────────────────────
 app.use(helmet({
@@ -29,7 +49,7 @@ app.use(helmet({
       scriptSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", 'data:', 'https:'],
-      connectSrc: ["'self'", ...frontendUrls],
+      connectSrc: ["'self'", ...frontendOrigins],
     },
   },
   hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
@@ -39,21 +59,23 @@ app.use(helmet({
 // ── CORS ────────────────────────────────────────
 // FRONTEND_URL can be comma-separated for multiple origins, e.g.:
 // "https://radha-rani-paridhan.vercel.app,http://localhost:3000"
-const allowedOrigins = [
+const allowedOrigins = new Set([
   'http://localhost:3000',
   'http://localhost:3001',
-  ...env.FRONTEND_URL.split(',').map(u => u.trim()).filter(Boolean),
-];
+  ...frontendOrigins,
+]);
 
 app.set('trust proxy', 1); // Trust first proxy (required for Render/Vercel rate-limiting)
 
 app.use(cors({
   origin: (origin, callback) => {
+    const normalizedOrigin = origin ? parseOrigin(origin) : null;
+
     // allow server-to-server (no origin), specific listed origins, OR vercel domains dynamically
     if (
       !origin ||
-      allowedOrigins.includes(origin) ||
-      origin.includes("vercel.app") 
+      (normalizedOrigin && allowedOrigins.has(normalizedOrigin)) ||
+      (normalizedOrigin && normalizedOrigin.endsWith('.vercel.app'))
     ) {
       callback(null, true);
     } else {

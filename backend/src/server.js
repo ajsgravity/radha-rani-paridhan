@@ -18,6 +18,9 @@ const orderRoutes = require('./routes/orders');
 
 const app = express();
 
+// Extract individual urls if FRONTEND_URL contains commas
+const frontendUrls = env.FRONTEND_URL.split(',').map(u => u.trim()).filter(Boolean);
+
 // ── Security Headers ────────────────────────────
 app.use(helmet({
   contentSecurityPolicy: {
@@ -26,7 +29,7 @@ app.use(helmet({
       scriptSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", 'data:', 'https:'],
-      connectSrc: ["'self'", env.FRONTEND_URL],
+      connectSrc: ["'self'", ...frontendUrls],
     },
   },
   hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },

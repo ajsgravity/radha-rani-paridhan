@@ -12,6 +12,38 @@ function isBcryptHash(value) {
   return /^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/.test(value);
 }
 
+function normalizeSecret(value) {
+  if (typeof value !== 'string') return '';
+  let normalized = value.trim();
+
+  // Remove wrapping quotes from env UIs/scripts: "value" or 'value'
+  if (
+    (normalized.startsWith('"') && normalized.endsWith('"')) ||
+    (normalized.startsWith("'") && normalized.endsWith("'"))
+  ) {
+    normalized = normalized.slice(1, -1).trim();
+  }
+
+  // Handle escaped dollars from shell export scripts: \$2b\$...
+  normalized = normalized.replace(/\\\$/g, '$');
+
+  return normalized;
+}
+
+function normalizeBcryptHash(value) {
+  let hash = normalizeSecret(value);
+
+  // Handle accidental double dollars: $$2b$...
+  hash = hash.replace(/^\$\$(?=2[aby]\$)/, '$');
+
+  // Handle missing leading dollar: 2b$...
+  if (/^2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$/.test(hash)) {
+    hash = `$${hash}`;
+  }
+
+  return hash;
+}
+
 const loginSchema = z.object({
   secretKey: z.string().min(1, 'Secret key is required'),
 });
@@ -20,9 +52,11 @@ const loginSchema = z.object({
 router.post('/login', loginLimiter, validate(loginSchema), async (req, res) => {
   try {
     const secretKey = req.body.secretKey.trim();
+    const configuredPlainKey = normalizeSecret(env.ADMIN_SECRET_KEY);
+    const configuredHash = normalizeBcryptHash(env.ADMIN_SECRET_KEY_HASH);
 
     // If no hash nor plain text key is set yet, use a demo mode
-    if (!env.ADMIN_SECRET_KEY_HASH && !env.ADMIN_SECRET_KEY) {
+    if (!configuredHash && !configuredPlainKey) {
       // Demo mode: any key works
       const accessToken = signAccessToken({ role: 'admin', email: env.ADMIN_EMAIL });
       const refreshToken = signRefreshToken({ role: 'admin', email: env.ADMIN_EMAIL });
@@ -41,15 +75,15 @@ router.post('/login', loginLimiter, validate(loginSchema), async (req, res) => {
     let isValid = false;
     
     // Check plaintext key if defined, else compare against bcrypt hash
-    if (env.ADMIN_SECRET_KEY) {
-      isValid = (secretKey === env.ADMIN_SECRET_KEY);
-    } else if (env.ADMIN_SECRET_KEY_HASH) {
+    if (configuredPlainKey) {
+      isValid = (secretKey === configuredPlainKey);
+    } else if (configuredHash) {
       // Accept both bcrypt hash and plain text for safer deployment recovery.
       // If hash is not a bcrypt hash format, fallback to plain comparison.
-      if (isBcryptHash(env.ADMIN_SECRET_KEY_HASH)) {
-        isValid = await verifyPassword(secretKey, env.ADMIN_SECRET_KEY_HASH);
+      if (isBcryptHash(configuredHash)) {
+        isValid = await verifyPassword(secretKey, configuredHash);
       } else {
-        isValid = (secretKey === env.ADMIN_SECRET_KEY_HASH);
+        isValid = (secretKey === configuredHash);
       }
     } else {
       isValid = false;

@@ -6,6 +6,8 @@ import AddToCartButton from '../components/AddToCartButton'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'Collections — Radha Rani Paridhan Ajmer',
   description: 'Explore our complete collection of sarees, lehengas, anarkali suits and ethnic wear.',
@@ -16,7 +18,7 @@ async function getProducts(category) {
     const url = category
       ? `${API_URL}/api/products?category=${category}`
       : `${API_URL}/api/products`
-    const res = await fetch(url, { next: { revalidate: 60 } })
+    const res = await fetch(url, { cache: 'no-store' })
     if (!res.ok) return []
     const json = await res.json()
     return json.data || []

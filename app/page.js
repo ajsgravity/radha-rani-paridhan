@@ -6,6 +6,8 @@ import AddToCartButton from './components/AddToCartButton'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'Radha Rani Paridhan Ajmer — Premium Indian Ethnic Wear',
   description: 'Discover timeless elegance with handcrafted sarees, lehengas, anarkali suits and ethnic wear from Radha Rani Paridhan Ajmer. Premium quality, authentic craftsmanship.',
@@ -14,7 +16,7 @@ export const metadata = {
 async function getProducts() {
   try {
     const res = await fetch(`${API_URL}/api/products`, {
-      next: { revalidate: 60 }, // ISR: refresh every 60s
+      cache: 'no-store', // always fetch fresh — no build-time SSG
     })
     if (!res.ok) return []
     const json = await res.json()

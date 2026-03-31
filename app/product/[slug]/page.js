@@ -7,10 +7,12 @@ import AddToCartButton from '../../components/AddToCartButton'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
 
+export const dynamic = 'force-dynamic'
+
 async function getProduct(slug) {
   try {
     const res = await fetch(`${API_URL}/api/products/${slug}`, {
-      next: { revalidate: 60 },
+      cache: 'no-store',
     })
     if (!res.ok) return null
     const json = await res.json()

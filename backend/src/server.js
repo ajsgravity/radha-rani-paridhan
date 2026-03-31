@@ -42,27 +42,15 @@ const allowedOrigins = [
   ...env.FRONTEND_URL.split(',').map(u => u.trim()).filter(Boolean),
 ];
 
-// app.use(cors({
-//   origin: (origin, callback) => {
-//     // allow server-to-server (no origin) and listed origins
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       console.warn(`⚠️  CORS blocked: ${origin}`);
-//       callback(new Error(`CORS: origin ${origin} not allowed`));
-//     }
-//   },
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-// }));
+app.set('trust proxy', 1); // Trust first proxy (required for Render/Vercel rate-limiting)
 
 app.use(cors({
   origin: (origin, callback) => {
+    // allow server-to-server (no origin), specific listed origins, OR vercel domains dynamically
     if (
       !origin ||
       allowedOrigins.includes(origin) ||
-      origin.includes("vercel.app") // ✅ KEY FIX
+      origin.includes("vercel.app") 
     ) {
       callback(null, true);
     } else {
@@ -71,6 +59,8 @@ app.use(cors({
     }
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control'],
 }));
 
 // ── Parsing ─────────────────────────────────────

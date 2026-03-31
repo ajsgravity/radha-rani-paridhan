@@ -34,10 +34,26 @@ app.use(helmet({
 }));
 
 // ── CORS ────────────────────────────────────────
+// FRONTEND_URL can be comma-separated for multiple origins, e.g.:
+// "https://radha-rani-paridhan.vercel.app,http://localhost:3000"
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  ...env.FRONTEND_URL.split(',').map(u => u.trim()).filter(Boolean),
+];
+
 app.use(cors({
-  origin: env.FRONTEND_URL,
+  origin: (origin, callback) => {
+    // allow server-to-server (no origin) and listed origins
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`⚠️  CORS blocked: ${origin}`);
+      callback(new Error(`CORS: origin ${origin} not allowed`));
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
